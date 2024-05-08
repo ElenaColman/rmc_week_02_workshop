@@ -1,6 +1,6 @@
 ---
 title: "Global Disease Burden Analysis"
-author: "REPLACE WITH THE AUTHOR NAMES" # AUTHOR NAMES HERE!
+author: "Elena" # AUTHOR NAMES HERE!
 output: github_document
 ---
 
@@ -15,6 +15,57 @@ This document compares the Disability-Adjusted Life Year (DALY) diseases burden 
 The source data is from the Institute for Health Metrics and Evaluation (IHME) Global Burden of Disease (GBD) study. 
 
 ```{r child='cmnn_burden.Rmd'}
+
+# Communicable, Maternal, Neonatal, and Nutritional Disease Burden (CMNN)
+
+
+# Load necessary packages
+pacman::p_load(tidyverse, knitr, here)
+
+# Import the communicable diseases data
+data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
+data_cmnn
+```
+
+## Table of Estimates for CMNN Burden Over Time
+
+```{r}
+
+
+# Use kable() from the knitr package to render the table.
+
+pivoted_data <- data_cmnn %>%
+  filter(Entity %in% c("Afghanistan", "Brazil", "Slovenia")) %>% 
+  select(Entity, Year, `DALYs (Disability-Adjusted Life Years) - Communicable, maternal, neonatal, and nutritional diseases - Sex: Both - Age: Age-standardized (Rate)`) %>%
+  pivot_wider(names_from = Entity, values_from = `DALYs (Disability-Adjusted Life Years) - Communicable, maternal, neonatal, and nutritional diseases - Sex: Both - Age: Age-standardized (Rate)`, names_prefix = "DALYs_")
+
+# Render the table using kable()
+kable(pivoted_data)
+
+```
+
+## Plot Showing Trends in CMNN Burden Over Time
+
+```{r}
+# Here, plot a line graph showing the trend of DALY burden for the chosen countries over time. You can use ggplot2 to create this plot. Each country's line should be a different color.
+ggplot(pivoted_data, aes(x = Year)) +
+  geom_line(aes(y = DALYs_Afghanistan, color = "Afghanistan")) +
+  geom_line(aes(y = DALYs_Brazil, color = "Brazil")) +
+  geom_line(aes(y = DALYs_Slovenia, color = "Slovenia")) +
+  labs(x = "Year", y = "DALYs", color = "Country") +
+  scale_color_manual(values = c("Afghanistan" = "blue", "Brazil" = "red", "Slovenia" = "green")) +
+  theme_minimal()
+
+```
+
+## Summary of CMNN Burden Findings
+
+Provide a brief analysis based on the data presented in the table and chart. Highlight any significant findings or patterns. About 3 sentences.
+
+Slovenia has the lowest DALY of the three countries and has been decreasing in a steady line over the past 30 years. Afghanistan is still the country with the highest DALY in 2020, but has improved the most in the last 30 years.
+
+
+
 ```
 
 ```{r child='ncd_burden.Rmd'}
